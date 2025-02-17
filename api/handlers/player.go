@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -41,7 +40,6 @@ func (h *PlayerHandler) getPlayerList(w http.ResponseWriter, r *http.Request) er
 	if err != nil {
 		return err
 	}
-	fmt.Println(limit)
 
 	return SendJSON(w, http.StatusOK, pl)
 }

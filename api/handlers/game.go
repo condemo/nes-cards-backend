@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -71,8 +70,7 @@ func (h *GameHandler) createGame(w http.ResponseWriter, r *http.Request) error {
 	// CreateGame
 	game := types.NewGame(g)
 	if err := h.store.CreateGame(game); err != nil {
-		fmt.Println(err)
-		return nil
+		return err
 	}
 
 	p1Stats := types.NewStats(game.ID, game.Player1.ID, g.PlayerHP, g.TowerHP)
