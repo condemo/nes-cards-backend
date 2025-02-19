@@ -24,6 +24,7 @@ func NewGameHandler(s store.Store) *GameHandler {
 func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /", makeHandler(h.getGameRecords))
 	r.HandleFunc("GET /{id}", makeHandler(h.getGame))
+	r.HandleFunc("GET /last", makeHandler(h.getLastGame))
 	r.HandleFunc("POST /", makeHandler(h.createGame))
 }
 
@@ -35,6 +36,15 @@ func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	g, err := h.store.GetGameById(id)
+	if err != nil {
+		return err
+	}
+
+	return SendJSON(w, http.StatusOK, g)
+}
+
+func (h *GameHandler) getLastGame(w http.ResponseWriter, r *http.Request) error {
+	g, err := h.store.GetLastGame()
 	if err != nil {
 		return err
 	}
