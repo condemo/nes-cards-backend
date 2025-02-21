@@ -1,5 +1,7 @@
 package types
 
+// NOTE: Archivo de ejemplo: NO BORRAR
+
 type Poison struct {
 	dmg uint8
 }

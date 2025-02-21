@@ -2,6 +2,8 @@ package types
 
 import "github.com/go-playground/validator/v10"
 
+// NOTE: Archivo de ejemplo: NO BORRAR
+
 var validate = validator.New(validator.WithRequiredStructEnabled())
 
 type Structure interface {
