@@ -11,14 +11,17 @@ type Store interface {
 	// TODO: Añadir Updates y Deletes
 	CreatePlayer(*types.Player) error
 	CheckPlayer(string) bool
-	GetPlayerById(*types.Player) error
+	GetPlayerById(int64) (*types.Player, error)
 	GetPlayerByName(*types.Player) error
 	GetPlayerList(limit int) ([]types.Player, error)
+	UpdatePlayer(*types.Player) error
+	DeletePlayer(int64) error
 	CreatePlayerStats([]*types.Stats) error
 	CreateGame(*types.Game) error
 	GetGameById(id int64) (*types.Game, error)
 	GetLastGame() (*types.Game, error)
 	GetGameList(limit int) ([]*types.Game, error)
+	UpdateGame(*types.Game) error
 }
 
 type Storage struct {
@@ -46,11 +49,12 @@ func (s *Storage) CheckPlayer(name string) bool {
 	return true
 }
 
-func (s *Storage) GetPlayerById(p *types.Player) error {
+func (s *Storage) GetPlayerById(id int64) (*types.Player, error) {
+	p := new(types.Player)
 	err := s.db.NewSelect().Model(p).
-		Where("id = ?", p.ID).Scan(context.Background())
+		Where("id = ?", id).Scan(context.Background())
 
-	return err
+	return p, err
 }
 
 func (s *Storage) GetPlayerByName(p *types.Player) error {
@@ -67,6 +71,19 @@ func (s *Storage) GetPlayerList(limit int) ([]types.Player, error) {
 		Scan(context.Background())
 
 	return pl, err
+}
+
+func (s *Storage) UpdatePlayer(p *types.Player) error {
+	_, err := s.db.NewUpdate().
+		Model(p).WherePK().Exec(context.Background())
+	return err
+}
+
+func (s *Storage) DeletePlayer(id int64) error {
+	_, err := s.db.NewDelete().
+		Model(&types.Player{}).Where("id = ?", id).Exec(context.Background())
+
+	return err
 }
 
 func (s *Storage) CreatePlayerStats(ps []*types.Stats) error {
@@ -126,4 +143,10 @@ func (s *Storage) GetGameById(id int64) (*types.Game, error) {
 		Where("g.id = ?", id).Scan(context.Background())
 
 	return g, err
+}
+
+func (s *Storage) UpdateGame(g *types.Game) error {
+	_, err := s.db.NewUpdate().
+		Model(g).WherePK().Exec(context.Background())
+	return err
 }

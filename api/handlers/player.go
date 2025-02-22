@@ -25,6 +25,8 @@ func NewPlayerHandler(s store.Store) *PlayerHandler {
 func (h *PlayerHandler) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /", makeHandler(h.getPlayerList))
 	r.HandleFunc("POST /", makeHandler(h.createPlayer))
+	r.HandleFunc("PUT /", makeHandler(h.updatePlayer))
+	r.HandleFunc("DELETE /{id}", makeHandler(h.deletePlayer))
 }
 
 func (h *PlayerHandler) getPlayerList(w http.ResponseWriter, r *http.Request) error {
@@ -76,4 +78,39 @@ func (h *PlayerHandler) createPlayer(w http.ResponseWriter, r *http.Request) err
 	}
 
 	return SendJSON(w, http.StatusCreated, p)
+}
+
+func (h *PlayerHandler) updatePlayer(w http.ResponseWriter, r *http.Request) error {
+	p := new(types.Player)
+
+	if err := json.NewDecoder(r.Body).Decode(p); err != nil {
+		return err
+	}
+	if err := p.Validate(); err != nil {
+		return NewApiError(err, "invalid player name", http.StatusBadRequest)
+	}
+
+	if err := h.store.UpdatePlayer(p); err != nil {
+		return err
+	}
+
+	return SendJSON(w, http.StatusOK, p)
+}
+
+func (h *PlayerHandler) deletePlayer(w http.ResponseWriter, r *http.Request) error {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if _, err = h.store.GetPlayerById(id); err != nil {
+		return NewApiError(err, "player not found", http.StatusNotFound)
+	}
+
+	if err := h.store.DeletePlayer(id); err != nil {
+		return err
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
