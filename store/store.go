@@ -22,6 +22,7 @@ type Store interface {
 	GetLastGame() (*types.Game, error)
 	GetGameList(limit int) ([]*types.Game, error)
 	UpdateGame(*types.Game) error
+	DeleteGame(int64) error
 }
 
 type Storage struct {
@@ -148,5 +149,11 @@ func (s *Storage) GetGameById(id int64) (*types.Game, error) {
 func (s *Storage) UpdateGame(g *types.Game) error {
 	_, err := s.db.NewUpdate().
 		Model(g).WherePK().Exec(context.Background())
+	return err
+}
+
+func (s *Storage) DeleteGame(id int64) error {
+	_, err := s.db.NewDelete().
+		Model(&types.Game{}).Where("id = ?", id).Exec(context.Background())
 	return err
 }
