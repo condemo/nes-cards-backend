@@ -26,6 +26,8 @@ func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /{id}", makeHandler(h.getGame))
 	r.HandleFunc("GET /last", makeHandler(h.getLastGame))
 	r.HandleFunc("POST /", makeHandler(h.createGame))
+	r.HandleFunc("PUT /", makeHandler(h.updateGame))
+	r.HandleFunc("DELETE /{id}", makeHandler(h.deleteGame))
 }
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
@@ -127,4 +129,36 @@ func (h *GameHandler) getGameRecords(w http.ResponseWriter, r *http.Request) err
 	}
 
 	return SendJSON(w, http.StatusOK, gl)
+}
+
+func (h *GameHandler) updateGame(w http.ResponseWriter, r *http.Request) error {
+	g := new(types.Game)
+
+	if err := json.NewDecoder(r.Body).Decode(g); err != nil {
+		return err
+	}
+
+	if err := h.store.UpdateGame(g); err != nil {
+		return err
+	}
+
+	return SendJSON(w, http.StatusOK, g)
+}
+
+func (h *GameHandler) deleteGame(w http.ResponseWriter, r *http.Request) error {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if _, err := h.store.GetGameById(id); err != nil {
+		return NewApiError(err, "game not found", http.StatusNotFound)
+	}
+
+	if err := h.store.DeleteGame(id); err != nil {
+		return err
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
