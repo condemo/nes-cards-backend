@@ -23,6 +23,7 @@ type Store interface {
 	GetGameList(limit int) ([]*types.Game, error)
 	UpdateGame(*types.Game) error
 	DeleteGame(int64) error
+	UpdateStats(*types.Stats) error
 }
 
 type Storage struct {
@@ -154,6 +155,20 @@ func (s *Storage) UpdateGame(g *types.Game) error {
 
 func (s *Storage) DeleteGame(id int64) error {
 	_, err := s.db.NewDelete().
-		Model(&types.Game{}).Where("id = ?", id).Exec(context.Background())
+		Model(&types.Game{}).Where("id = ?", id).ForceDelete().
+		Exec(context.Background())
+	if err != nil {
+		return err
+	}
+
+	// PERF: Conseguir un DELETE CASCADE usando BUN y hacer todo en una query
+	_, err = s.db.NewDelete().Model(&types.Stats{}).
+		Where("game_id = ?", id).Exec(context.Background())
+	return err
+}
+
+func (s *Storage) UpdateStats(st *types.Stats) error {
+	_, err := s.db.NewUpdate().Model(st).
+		WherePK().Exec(context.Background())
 	return err
 }
