@@ -28,6 +28,7 @@ func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("POST /", makeHandler(h.createGame))
 	r.HandleFunc("PUT /", makeHandler(h.updateGame))
 	r.HandleFunc("DELETE /{id}", makeHandler(h.deleteGame))
+	r.HandleFunc("PUT /stats", makeHandler(h.updateStats))
 }
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
@@ -161,4 +162,18 @@ func (h *GameHandler) deleteGame(w http.ResponseWriter, r *http.Request) error {
 
 	w.WriteHeader(http.StatusNoContent)
 	return nil
+}
+
+func (h *GameHandler) updateStats(w http.ResponseWriter, r *http.Request) error {
+	st := new(types.Stats)
+
+	if err := json.NewDecoder(r.Body).Decode(st); err != nil {
+		return err
+	}
+
+	if err := h.store.UpdateStats(st); err != nil {
+		return err
+	}
+
+	return SendJSON(w, http.StatusOK, st)
 }
