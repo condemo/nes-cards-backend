@@ -11,6 +11,7 @@ import (
 
 	"github.com/condemo/nes-cards-backend/api/handlers"
 	"github.com/condemo/nes-cards-backend/api/middlewares"
+	"github.com/condemo/nes-cards-backend/service"
 	"github.com/condemo/nes-cards-backend/store"
 )
 
@@ -31,6 +32,7 @@ func (s *ApiServer) Run() {
 	api := http.NewServeMux()
 	game := http.NewServeMux()
 	player := http.NewServeMux()
+	currentGame := http.NewServeMux()
 
 	basicMiddlewares := middlewares.MiddlewareStack(
 		middlewares.AddCors,
@@ -41,12 +43,17 @@ func (s *ApiServer) Run() {
 	router.Handle("/api/v1/", http.StripPrefix("/api/v1", basicMiddlewares(api)))
 	api.Handle("/game/", http.StripPrefix("/game", game))
 	api.Handle("/player/", http.StripPrefix("/player", player))
+	api.Handle("/current/", http.StripPrefix("/current", currentGame))
 
 	gameHandler := handlers.NewGameHandler(s.store)
 	gameHandler.RegisterRoutes(game)
 
 	playerHandler := handlers.NewPlayerHandler(s.store)
 	playerHandler.RegisterRoutes(player)
+
+	gs := service.NewGameService()
+	currentGameHandler := handlers.NewCurrentGameHandlder(gs, s.store)
+	currentGameHandler.RegisterRoutes(currentGame)
 
 	server := http.Server{
 		Addr:         s.addr,

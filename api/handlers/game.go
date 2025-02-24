@@ -32,7 +32,6 @@ func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 }
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
-	// TODO: Mejorar implementación
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
 		return err
