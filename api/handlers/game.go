@@ -7,17 +7,20 @@ import (
 	"strconv"
 
 	"github.com/condemo/nes-cards-backend/config"
+	"github.com/condemo/nes-cards-backend/service"
 	"github.com/condemo/nes-cards-backend/store"
 	"github.com/condemo/nes-cards-backend/types"
 )
 
 type GameHandler struct {
 	store store.Store
+	gs    *service.GameService
 }
 
-func NewGameHandler(s store.Store) *GameHandler {
+func NewGameHandler(s store.Store, gs *service.GameService) *GameHandler {
 	return &GameHandler{
 		store: s,
+		gs:    gs,
 	}
 }
 
@@ -32,26 +35,55 @@ func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 }
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
+	var updateCurrent bool
+	uc := r.FormValue("updateCurrent")
+	if uc != "" {
+		ok, err := strconv.ParseBool(r.FormValue("updateCurrent"))
+		if err != nil {
+			return NewApiError(err, "updateCurrent must be a boolean value", http.StatusBadRequest)
+		}
+		updateCurrent = ok
+	}
+
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
 		return err
 	}
 
-	g, err := h.store.GetGameById(id)
+	game, err := h.store.GetGameById(id)
 	if err != nil {
 		return err
 	}
 
-	return SendJSON(w, http.StatusOK, g)
+	if updateCurrent {
+		h.gs.SetGame(game)
+	}
+
+	return SendJSON(w, http.StatusOK, game)
 }
 
 func (h *GameHandler) getLastGame(w http.ResponseWriter, r *http.Request) error {
-	g, err := h.store.GetLastGame()
+	var updateCurrent bool
+
+	cu := r.FormValue("updateCurrent")
+	if cu != "" {
+		ok, err := strconv.ParseBool(cu)
+		if err != nil {
+			return NewApiError(err, "updateCurrent must be a boolean value", http.StatusBadRequest)
+		}
+		updateCurrent = ok
+	}
+
+	game, err := h.store.GetLastGame()
 	if err != nil {
 		return err
 	}
 
-	return SendJSON(w, http.StatusOK, g)
+	if updateCurrent {
+		h.gs.SetGame(game)
+	}
+
+	return SendJSON(w, http.StatusOK, game)
 }
 
 func (h *GameHandler) createGame(w http.ResponseWriter, r *http.Request) error {
@@ -106,6 +138,8 @@ func (h *GameHandler) createGame(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
+	h.gs.SetGame(game)
 
 	return SendJSON(w, http.StatusCreated, game)
 }
