@@ -10,6 +10,10 @@ func NewGameService() *GameService {
 	return &GameService{}
 }
 
+func (gs *GameService) GetCurrent() *types.Game {
+	return gs.game
+}
+
 func (gs *GameService) SetGame(g *types.Game) {
 	gs.game = g
 }
