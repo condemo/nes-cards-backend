@@ -45,13 +45,14 @@ func (s *ApiServer) Run() {
 	api.Handle("/player/", http.StripPrefix("/player", player))
 	api.Handle("/current/", http.StripPrefix("/current", currentGame))
 
-	gameHandler := handlers.NewGameHandler(s.store)
+	gs := service.NewGameService()
+
+	gameHandler := handlers.NewGameHandler(s.store, gs)
 	gameHandler.RegisterRoutes(game)
 
 	playerHandler := handlers.NewPlayerHandler(s.store)
 	playerHandler.RegisterRoutes(player)
 
-	gs := service.NewGameService()
 	currentGameHandler := handlers.NewCurrentGameHandlder(gs, s.store)
 	currentGameHandler.RegisterRoutes(currentGame)
 
