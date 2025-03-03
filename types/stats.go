@@ -11,6 +11,7 @@ type Stats struct {
 	HP         uint8 `bun:",nullzero" validator:"gte=0,lte=255" json:"hp"`
 	Strength   int16 `bun:",nullzero" json:"strength"`
 	Intangible uint8 `bun:",nullzero" json:"intangible"`
+	Confusion  uint8 `bun:",nullzero" json:"confusion"`
 	T1HP       uint8 `bun:",nullzero" json:"t1hp"`
 	T2HP       uint8 `bun:",nullzero" json:"t2hp"`
 }
