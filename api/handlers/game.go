@@ -36,9 +36,9 @@ func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {
 	var updateCurrent bool
-	uc := r.FormValue("updateCurrent")
+	uc := r.URL.Query().Get("updateCurrent")
 	if uc != "" {
-		ok, err := strconv.ParseBool(r.FormValue("updateCurrent"))
+		ok, err := strconv.ParseBool(uc)
 		if err != nil {
 			return NewApiError(err, "updateCurrent must be a boolean value", http.StatusBadRequest)
 		}
@@ -146,7 +146,7 @@ func (h *GameHandler) createGame(w http.ResponseWriter, r *http.Request) error {
 
 func (h *GameHandler) getGameRecords(w http.ResponseWriter, r *http.Request) error {
 	var limit int
-	l := r.FormValue("limit")
+	l := r.URL.Query().Get("limit")
 	if l != "" {
 		limitInt64, err := strconv.ParseInt(l, 10, 64)
 		if err != nil {

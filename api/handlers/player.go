@@ -31,7 +31,7 @@ func (h *PlayerHandler) RegisterRoutes(r *http.ServeMux) {
 
 func (h *PlayerHandler) getPlayerList(w http.ResponseWriter, r *http.Request) error {
 	var limit int
-	l := r.FormValue("limit")
+	l := r.URL.Query().Get("limit")
 	if l != "" {
 		limitInt, err := strconv.ParseInt(l, 10, 64)
 		if err != nil {
