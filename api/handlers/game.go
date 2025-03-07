@@ -76,10 +76,10 @@ func (h *GameHandler) getLastGame(w http.ResponseWriter, r *http.Request) error 
 
 	game, err := h.store.GetLastGame()
 	if err != nil {
-		return err
+		return NewApiError(err, "there is no game yet", http.StatusNotFound)
 	}
 
-	if updateCurrent {
+	if updateCurrent && game != nil {
 		h.gs.SetGame(game)
 	}
 
