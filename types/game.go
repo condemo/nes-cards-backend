@@ -10,15 +10,18 @@ import (
 type Game struct {
 	bun.BaseModel `bun:"table:games,alias:g"`
 
-	ID        int64     `bun:",pk,autoincrement" json:"id"`
-	P1ID      int64     `json:"p1id"`
-	P2ID      int64     `json:"p2id"`
-	Player1   *Player   `bun:"rel:belongs-to,join:p1id=id" json:"player1"`
-	Player2   *Player   `bun:"rel:belongs-to,join:p2id=id" json:"player2"`
-	P1Stats   *Stats    `bun:"rel:has-one,join:p1id=player_id,join:id=game_id" json:"p1stats"`
-	P2Stats   *Stats    `bun:"rel:has-one,join:p2id=player_id,join:id=game_id" json:"p2stats"`
-	Winner    string    `bun:"winner" json:"winner"`
-	CreatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
+	ID         int64     `bun:",pk,autoincrement" json:"id"`
+	P1ID       int64     `json:"p1id"`
+	P2ID       int64     `json:"p2id"`
+	Player1    *Player   `bun:"rel:belongs-to,join:p1id=id" json:"player1"`
+	Player2    *Player   `bun:"rel:belongs-to,join:p2id=id" json:"player2"`
+	P1Stats    *Stats    `bun:"rel:has-one,join:p1id=player_id,join:id=game_id" json:"p1stats"`
+	P2Stats    *Stats    `bun:"rel:has-one,join:p2id=player_id,join:id=game_id" json:"p2stats"`
+	Winner     string    `bun:"winner" json:"winner"`
+	Round      uint16    `bun:"round,notnull" json:"round"`
+	TurnMode   uint8     `bun:",nullzero" json:"turnMode"`
+	PlayerTurn uint8     `bun:",nullzero" json:"playerTurn"`
+	CreatedAt  time.Time `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
 }
 
 var _ bun.BeforeAppendModelHook = (*Game)(nil)
@@ -44,6 +47,7 @@ func NewGame(gs *GameSetup) *Game {
 		Winner:  "none",
 		Player1: gs.Player1,
 		Player2: gs.Player2,
+		Round:   1,
 	}
 
 	return g
