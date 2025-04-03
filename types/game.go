@@ -21,20 +21,20 @@ type Game struct {
 	Round      uint16    `bun:"round,notnull" json:"round"`
 	TurnMode   uint8     `bun:",nullzero" json:"turnMode"`
 	PlayerTurn uint8     `bun:",nullzero" json:"playerTurn"`
-	CreatedAt  time.Time `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
+	CreatedAt  time.Time `bun:",nullzero,notnull" json:"createdAt"`
 }
 
 var _ bun.BeforeAppendModelHook = (*Game)(nil)
 
-// BeforeAppendModel gets the current time in GMT+1 and set it in CreatedAt field
+// BeforeAppendModel gets the current time in Madrid and set it in CreatedAt field
 func (g *Game) BeforeAppendModel(ctx context.Context, query bun.Query) error {
 	switch query.(type) {
 	case *bun.InsertQuery:
 		location, err := time.LoadLocation("Europe/Madrid")
 		if err != nil {
 			return err
-		} // FIX: Añado una hora de free por el cambio de hora, debería ser automático
-		g.CreatedAt = time.Now().In(location).Add(time.Hour)
+		}
+		g.CreatedAt = time.Now().In(location)
 	}
 
 	return nil
