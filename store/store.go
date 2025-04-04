@@ -148,9 +148,20 @@ func (s *Storage) GetGameById(id int64) (*types.Game, error) {
 }
 
 func (s *Storage) UpdateGame(g *types.Game) error {
-	_, err := s.db.NewUpdate().
-		Model(g).WherePK().Exec(context.Background())
-	return err
+	if _, err := s.db.NewUpdate().
+		Model(g).WherePK().Exec(context.Background()); err != nil {
+		return err
+	}
+
+	if err := s.UpdateStats(g.P1Stats); err != nil {
+		return err
+	}
+
+	if err := s.UpdateStats(g.P2Stats); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Storage) DeleteGame(id int64) error {
