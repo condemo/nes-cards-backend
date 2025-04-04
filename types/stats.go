@@ -5,15 +5,16 @@ import "github.com/uptrace/bun"
 type Stats struct {
 	bun.BaseModel `bun:"table:stats,alias:t"`
 
-	ID         int64 `bun:",pk,autoincrement" json:"id"`
-	GameID     int64 `bun:",notnull" json:"gameID"`
-	PlayerID   int64 `bun:",notnull" json:"playerID"`
-	HP         uint8 `bun:",nullzero" validator:"gte=0,lte=255" json:"hp"`
-	Strength   int16 `bun:",nullzero" json:"strength"`
-	Intangible uint8 `bun:",nullzero" json:"intangible"`
-	Confusion  uint8 `bun:",nullzero" json:"confusion"`
-	T1HP       uint8 `bun:",nullzero" json:"t1hp"`
-	T2HP       uint8 `bun:",nullzero" json:"t2hp"`
+	ID         int64  `bun:",pk,autoincrement" json:"id"`
+	GameID     int64  `bun:",notnull" json:"gameID"`
+	PlayerID   int64  `bun:",notnull" json:"playerID"`
+	HP         uint8  `bun:",nullzero" validator:"gte=0,lte=255" json:"hp"`
+	Strength   int16  `bun:",nullzero" json:"strength"`
+	Intangible uint8  `bun:",nullzero" json:"intangible"`
+	Confusion  uint8  `bun:",nullzero" json:"confusion"`
+	Defenses   string `bun:",notnull" json:"defenses"`
+	T1HP       uint8  `bun:",nullzero" json:"t1hp"`
+	T2HP       uint8  `bun:",nullzero" json:"t2hp"`
 }
 
 // NewStats recibe GameID y PlayerID además de una cantidad de HP e instancia dos Torres
