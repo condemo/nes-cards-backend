@@ -14,6 +14,9 @@ arm-build:
 arm-run: arm-build
 	@./bin/${binary-name}-arm64
 
+remove-db:
+	@rm -rf ~/.local/share/nes-cards/data.db
+
 kill-services:
 	@lsof -t -i:3000 | xargs -r kill
 
@@ -23,5 +26,3 @@ test:
 clean:
 	@rm -rf ./bin/*
 	@go clean
-
-
