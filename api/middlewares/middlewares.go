@@ -35,7 +35,7 @@ func AddCors(next http.Handler) http.HandlerFunc {
 		// FIX: Actualmente hay una brecha de seguridad al permitir a todo el mundo
 		// acceder a esta ruta
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
+		w.Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS, PUT")
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
