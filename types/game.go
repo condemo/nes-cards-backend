@@ -22,19 +22,23 @@ type Game struct {
 	TurnMode   uint8     `bun:",nullzero" json:"turnMode"`
 	PlayerTurn uint8     `bun:",nullzero" json:"playerTurn"`
 	CreatedAt  time.Time `bun:",nullzero,notnull" json:"createdAt"`
+	UpdateAt   time.Time `bun:"updateAt" json:"updateAt"`
 }
 
 var _ bun.BeforeAppendModelHook = (*Game)(nil)
 
 // BeforeAppendModel gets the current time in Madrid and set it in CreatedAt field
 func (g *Game) BeforeAppendModel(ctx context.Context, query bun.Query) error {
+	location, err := time.LoadLocation("Europe/Madrid")
+	if err != nil {
+		return err
+	}
+
 	switch query.(type) {
 	case *bun.InsertQuery:
-		location, err := time.LoadLocation("Europe/Madrid")
-		if err != nil {
-			return err
-		}
 		g.CreatedAt = time.Now().In(location)
+	case *bun.UpdateQuery:
+		g.UpdateAt = time.Now().In(location)
 	}
 
 	return nil
