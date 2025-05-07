@@ -20,7 +20,7 @@ type SqliteStore struct {
 
 func NewSqliteStore() *SqliteStore {
 	homeDir, err := os.UserHomeDir()
-	logError(err)
+	LogError(err)
 
 	dataDir := path.Join(homeDir, ".local/share/nes-cards")
 	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
@@ -30,7 +30,7 @@ func NewSqliteStore() *SqliteStore {
 	dsn := fmt.Sprintf("file:%s/data.db?cache=shared", dataDir)
 
 	sqldb, err := sql.Open(sqliteshim.ShimName, dsn)
-	logError(err)
+	LogError(err)
 
 	db := bun.NewDB(sqldb, sqlitedialect.New())
 
@@ -62,7 +62,7 @@ func (s *SqliteStore) Init() (*bun.DB, error) {
 	return s.db, nil
 }
 
-func logError(e error) {
+func LogError(e error) {
 	if e != nil {
 		log.Fatalln("database error: ", e)
 	}

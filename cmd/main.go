@@ -7,14 +7,16 @@ import (
 
 	"github.com/condemo/nes-cards-backend/api"
 	"github.com/condemo/nes-cards-backend/store"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
 	addr := flag.String("p", ":3000", "addr")
 	flag.Parse()
 
-	sqliteStorage := store.NewSqliteStore()
-	db, err := sqliteStorage.Init()
+	sqlStorage := store.NewPostgresqlStore()
+	db, err := sqlStorage.Init()
 	if err != nil {
 		log.Fatal("database error: ", err)
 	}
