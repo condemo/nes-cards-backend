@@ -27,7 +27,7 @@ func NewPostgresqlStore() *PostgresqlStore {
 func (s *PostgresqlStore) Init() (*bun.DB, error) {
 	ctx := context.Background()
 	// User Table
-	_, err := s.db.NewCreateTable().Model((*types.Player)(nil)).
+	_, err := s.db.NewCreateTable().Model((*types.User)(nil)).
 		IfNotExists().Exec(ctx)
 
 	// Game Table
