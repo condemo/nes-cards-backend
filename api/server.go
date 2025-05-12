@@ -30,6 +30,7 @@ func NewApiServer(addr string, s store.Store) *ApiServer {
 func (s *ApiServer) Run() {
 	router := http.NewServeMux()
 	api := http.NewServeMux()
+	auth := http.NewServeMux()
 	game := http.NewServeMux()
 	player := http.NewServeMux()
 	currentGame := http.NewServeMux()
@@ -41,11 +42,15 @@ func (s *ApiServer) Run() {
 	)
 
 	router.Handle("/api/v1/", http.StripPrefix("/api/v1", basicMiddlewares(api)))
+	router.Handle("/auth/", http.StripPrefix("/auth", auth))
 	api.Handle("/game/", http.StripPrefix("/game", game))
 	api.Handle("/player/", http.StripPrefix("/player", player))
 	api.Handle("/current/", http.StripPrefix("/current", currentGame))
 
 	gs := service.NewGameService()
+
+	authHandler := handlers.NewAuthHandler(s.store)
+	authHandler.RegisterRoutes(auth)
 
 	gameHandler := handlers.NewGameHandler(s.store, gs)
 	gameHandler.RegisterRoutes(game)
