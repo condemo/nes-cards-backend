@@ -8,7 +8,8 @@ import (
 )
 
 type Store interface {
-	// TODO: Añadir Updates y Deletes
+	CreateUser(user *types.User) error
+	GetUserByUsername(username string) (*types.User, error)
 	CreatePlayer(*types.Player) error
 	CheckPlayer(string) bool
 	GetPlayerById(int64) (*types.Player, error)
@@ -32,6 +33,23 @@ type Storage struct {
 
 func NewStorage(db *bun.DB) *Storage {
 	return &Storage{db: db}
+}
+
+func (s *Storage) CreateUser(user *types.User) error {
+	_, err := s.db.NewInsert().Model(user).
+		Returning("*").Exec(context.Background())
+	return err
+}
+
+func (s *Storage) GetUserByUsername(username string) (*types.User, error) {
+	user := new(types.User)
+	err := s.db.NewSelect().Model(user).
+		Where("username = ?", username).
+		Scan(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (s *Storage) CreatePlayer(p *types.Player) error {
