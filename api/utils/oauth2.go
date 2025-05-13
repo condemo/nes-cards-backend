@@ -69,7 +69,7 @@ func CreateRefreshJWT(username string) (string, error) {
 }
 
 func VerifyRefreshToken(rt string) (*UserNameClaims, error) {
-	parsedRefresh, err := jwt.ParseWithClaims(rt, &UserNameClaims{}, func(t *jwt.Token) (interface{}, error) {
+	parsedRefresh, err := jwt.ParseWithClaims(rt, &UserNameClaims{}, func(t *jwt.Token) (any, error) {
 		return []byte(os.Getenv("JWT_KEY")), nil
 	})
 	if err != nil {
@@ -83,5 +83,9 @@ func ValidateJWT(token string) (*UserIDClaims, error) {
 	parsedToken, err := jwt.ParseWithClaims(token, &UserIDClaims{}, func(t *jwt.Token) (any, error) {
 		return []byte(os.Getenv("JWT_KEY")), nil
 	})
-	return parsedToken.Claims.(*UserIDClaims), err
+	if err != nil {
+		return nil, err
+	}
+
+	return parsedToken.Claims.(*UserIDClaims), nil
 }
