@@ -39,6 +39,7 @@ func (s *ApiServer) Run() {
 		middlewares.AddCors,
 		middlewares.Recover,
 		middlewares.Logger,
+		middlewares.RequireAuth,
 	)
 
 	router.Handle("/api/v1/", http.StripPrefix("/api/v1", basicMiddlewares(api)))
