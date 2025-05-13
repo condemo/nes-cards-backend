@@ -47,9 +47,15 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	refreshToken, err := utils.CreateRefreshJWT(user.Username)
+	if err != nil {
+		return err
+	}
+
 	SendJSON(w, http.StatusOK, map[string]string{
-		"token":      token,
-		"token_type": "bearer",
+		"access_token":  token,
+		"refresh_token": refreshToken,
+		"token_type":    "bearer",
 	})
 
 	return nil
