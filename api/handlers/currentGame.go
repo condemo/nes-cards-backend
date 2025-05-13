@@ -22,7 +22,7 @@ func NewCurrentGameHandlder(gs *service.GameService, s store.Store) *CurrentGame
 
 func (h *CurrentGameHandler) RegisterRoutes(r *http.ServeMux) {
 	// NOTE: Igual no hace falta esta ruta pero no viene mal, reevaluar de vez en cuando
-	r.HandleFunc("POST /set/{id}", makeHandler(h.setGame))
+	r.HandleFunc("POST /set/{id}", MakeHandler(h.setGame))
 }
 
 func (h *CurrentGameHandler) setGame(w http.ResponseWriter, r *http.Request) error {

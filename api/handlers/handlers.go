@@ -31,7 +31,7 @@ var internalError = map[string]any{
 	"msg":    "internal server error",
 }
 
-func makeHandler(f CustomHandler) http.HandlerFunc {
+func MakeHandler(f CustomHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
 			if apiErr, ok := err.(ApiError); ok {

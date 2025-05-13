@@ -23,10 +23,10 @@ func NewPlayerHandler(s store.Store) *PlayerHandler {
 }
 
 func (h *PlayerHandler) RegisterRoutes(r *http.ServeMux) {
-	r.HandleFunc("GET /", makeHandler(h.getPlayerList))
-	r.HandleFunc("POST /", makeHandler(h.createPlayer))
-	r.HandleFunc("PUT /", makeHandler(h.updatePlayer))
-	r.HandleFunc("DELETE /{id}", makeHandler(h.deletePlayer))
+	r.HandleFunc("GET /", MakeHandler(h.getPlayerList))
+	r.HandleFunc("POST /", MakeHandler(h.createPlayer))
+	r.HandleFunc("PUT /", MakeHandler(h.updatePlayer))
+	r.HandleFunc("DELETE /{id}", MakeHandler(h.deletePlayer))
 }
 
 func (h *PlayerHandler) getPlayerList(w http.ResponseWriter, r *http.Request) error {

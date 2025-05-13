@@ -17,8 +17,8 @@ func NewAuthHandler(s store.Store) *AuthHandler {
 }
 
 func (h *AuthHandler) RegisterRoutes(r *http.ServeMux) {
-	r.HandleFunc("POST /login", makeHandler(h.login))
-	r.HandleFunc("POST /signup", makeHandler(h.signup))
+	r.HandleFunc("POST /login", MakeHandler(h.login))
+	r.HandleFunc("POST /signup", MakeHandler(h.signup))
 }
 
 func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
