@@ -30,7 +30,8 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
 		return ApiError{
 			Err:    err,
 			Status: http.StatusNotFound,
-			Msg:    "user not found"}
+			Msg:    "user not found",
+		}
 	}
 
 	if ok := utils.PassVerify(pass, user.Password); !ok {
@@ -41,9 +42,16 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	// TODO: JWT stuff
+	token, err := utils.CreateJWT(user.ID)
+	if err != nil {
+		return err
+	}
 
-	SendJSON(w, http.StatusOK, user)
+	SendJSON(w, http.StatusOK, map[string]string{
+		"token":      token,
+		"token_type": "bearer",
+	})
+
 	return nil
 }
 
