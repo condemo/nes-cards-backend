@@ -15,9 +15,15 @@ func RequireAuth(next http.Handler) http.HandlerFunc {
 	return handlers.MakeHandler(func(w http.ResponseWriter, r *http.Request) error {
 		rawToken := r.Header.Get("Authorization")
 		splitT := strings.Split(rawToken, "Bearer ")
+		if len(splitT) < 2 {
+			return handlers.ApiError{
+				Err:    errors.New("empty authorization or no bearer prefix"),
+				Msg:    "empty authorization or bad format",
+				Status: http.StatusUnauthorized,
+			}
+		}
 		token := splitT[1]
 
-		// TODO: JWT validation, etc
 		if token == "" {
 			return handlers.ApiError{
 				Err:    errors.New("empty token"),
