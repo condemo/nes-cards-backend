@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/condemo/nes-cards-backend/api/utils"
 	"github.com/condemo/nes-cards-backend/store"
 	"github.com/condemo/nes-cards-backend/types"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type AuthHandler struct {
@@ -19,6 +22,7 @@ func NewAuthHandler(s store.Store) *AuthHandler {
 func (h *AuthHandler) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("POST /login", MakeHandler(h.login))
 	r.HandleFunc("POST /signup", MakeHandler(h.signup))
+	r.HandleFunc("POST /refresh", MakeHandler(h.refresh))
 }
 
 func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
@@ -47,7 +51,7 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	refreshToken, err := utils.CreateRefreshJWT(user.Username)
+	refreshToken, err := utils.CreateRefreshJWT(user.ID)
 	if err != nil {
 		return err
 	}
@@ -90,6 +94,50 @@ func (h *AuthHandler) signup(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+
+	return nil
+}
+
+func (h *AuthHandler) refresh(w http.ResponseWriter, r *http.Request) error {
+	rawToken := r.Header.Get("Authorization")
+	splitT := strings.Split(rawToken, "Bearer ")
+	token := splitT[1]
+
+	if token == "" {
+		return ApiError{
+			Err:    errors.New("empty token"),
+			Msg:    "Authorization header not found",
+			Status: http.StatusUnauthorized,
+		}
+	}
+
+	claims, err := utils.ValidateJWT(token)
+	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return ApiError{
+				Err:    err,
+				Msg:    "access_token is expired",
+				Status: http.StatusGone,
+			}
+		}
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			return ApiError{
+				Err:    err,
+				Msg:    "invalid token format",
+				Status: http.StatusUnauthorized,
+			}
+		}
+	}
+
+	newToken, err := utils.CreateJWT(claims.UserID)
+	if err != nil {
+		return err
+	}
+
+	SendJSON(w, http.StatusOK, map[string]string{
+		"access_token": newToken,
+		"token_type":   "bearer",
+	})
 
 	return nil
 }
