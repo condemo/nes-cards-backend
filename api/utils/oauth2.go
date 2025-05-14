@@ -13,11 +13,6 @@ type UserIDClaims struct {
 	UserID int64 `json:"userID"`
 }
 
-type UserNameClaims struct {
-	jwt.RegisteredClaims
-	Username string
-}
-
 func CreateJWT(id int64) (string, error) {
 	jwtKey := []byte(os.Getenv("JWT_KEY"))
 
@@ -43,7 +38,7 @@ func CreateJWT(id int64) (string, error) {
 	return signedToken, nil
 }
 
-func CreateRefreshJWT(username string) (string, error) {
+func CreateRefreshJWT(id int64) (string, error) {
 	jwtKey := []byte(os.Getenv("JWT_KEY"))
 
 	expire, err := strconv.Atoi(os.Getenv("JWT_REFRESH_EXP_DAYS"))
@@ -52,11 +47,11 @@ func CreateRefreshJWT(username string) (string, error) {
 	}
 	expireDays := time.Now().Add(time.Hour * 24 * time.Duration(expire))
 
-	userClaims := UserNameClaims{
+	userClaims := UserIDClaims{
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireDays),
 		},
-		username,
+		id,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
@@ -66,17 +61,6 @@ func CreateRefreshJWT(username string) (string, error) {
 	}
 
 	return signedToken, nil
-}
-
-func VerifyRefreshToken(rt string) (*UserNameClaims, error) {
-	parsedRefresh, err := jwt.ParseWithClaims(rt, &UserNameClaims{}, func(t *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_KEY")), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return parsedRefresh.Claims.(*UserNameClaims), nil
 }
 
 func ValidateJWT(token string) (*UserIDClaims, error) {
