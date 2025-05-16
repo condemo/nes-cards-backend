@@ -35,15 +35,19 @@ func (s *ApiServer) Run() {
 	player := http.NewServeMux()
 	currentGame := http.NewServeMux()
 
-	basicMiddlewares := middlewares.MiddlewareStack(
+	basicMDStack := middlewares.MiddlewareStack(
 		middlewares.AddCors,
 		middlewares.Recover,
 		middlewares.Logger,
+	)
+
+	requireAuthMiddlewares := middlewares.MiddlewareStack(
+		basicMDStack,
 		middlewares.RequireAuth,
 	)
 
-	router.Handle("/api/v1/", http.StripPrefix("/api/v1", basicMiddlewares(api)))
-	router.Handle("/auth/", http.StripPrefix("/auth", auth))
+	router.Handle("/api/v1/", http.StripPrefix("/api/v1", requireAuthMiddlewares(api)))
+	router.Handle("/auth/", http.StripPrefix("/auth", basicMDStack(auth)))
 	api.Handle("/game/", http.StripPrefix("/game", game))
 	api.Handle("/player/", http.StripPrefix("/player", player))
 	api.Handle("/current/", http.StripPrefix("/current", currentGame))
