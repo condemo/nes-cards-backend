@@ -101,6 +101,13 @@ func (h *AuthHandler) signup(w http.ResponseWriter, r *http.Request) error {
 func (h *AuthHandler) refresh(w http.ResponseWriter, r *http.Request) error {
 	rawToken := r.Header.Get("Authorization")
 	splitT := strings.Split(rawToken, "Bearer ")
+	if len(splitT) < 2 {
+		return ApiError{
+			Err:    errors.New("empty authorization or bad format"),
+			Msg:    "empty authorization or bad format",
+			Status: http.StatusUnauthorized,
+		}
+	}
 	token := splitT[1]
 
 	if token == "" {

@@ -27,7 +27,7 @@ func RequireAuth(next http.Handler) http.HandlerFunc {
 		if token == "" {
 			return handlers.ApiError{
 				Err:    errors.New("empty token"),
-				Msg:    "authorization header not found",
+				Msg:    "authorization token not found",
 				Status: http.StatusUnauthorized,
 			}
 		}
