@@ -40,7 +40,7 @@ func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) error {
 
 	if ok := utils.PassVerify(pass, user.Password); !ok {
 		return ApiError{
-			Err:    err,
+			Err:    errors.New("invalid password"),
 			Status: http.StatusUnauthorized,
 			Msg:    "invalid password",
 		}
