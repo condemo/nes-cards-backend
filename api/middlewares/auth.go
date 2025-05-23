@@ -41,13 +41,14 @@ func RequireAuth(next http.Handler) http.HandlerFunc {
 					Status: http.StatusGone,
 				}
 			}
-			if errors.Is(err, jwt.ErrTokenMalformed) {
+			if errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrTokenSignatureInvalid) {
 				return handlers.ApiError{
 					Err:    err,
 					Msg:    "invalid token format",
 					Status: http.StatusUnauthorized,
 				}
 			}
+
 			return err
 		}
 
