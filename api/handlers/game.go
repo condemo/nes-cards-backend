@@ -25,13 +25,13 @@ func NewGameHandler(s store.Store, gs *service.GameService) *GameHandler {
 }
 
 func (h *GameHandler) RegisterRoutes(r *http.ServeMux) {
-	r.HandleFunc("GET /", makeHandler(h.getGameRecords))
-	r.HandleFunc("GET /{id}", makeHandler(h.getGame))
-	r.HandleFunc("GET /last", makeHandler(h.getLastGame))
-	r.HandleFunc("POST /", makeHandler(h.createGame))
-	r.HandleFunc("PUT /", makeHandler(h.updateGame))
-	r.HandleFunc("DELETE /{id}", makeHandler(h.deleteGame))
-	r.HandleFunc("PUT /stats", makeHandler(h.updateStats))
+	r.HandleFunc("GET /", MakeHandler(h.getGameRecords))
+	r.HandleFunc("GET /{id}", MakeHandler(h.getGame))
+	r.HandleFunc("GET /last", MakeHandler(h.getLastGame))
+	r.HandleFunc("POST /", MakeHandler(h.createGame))
+	r.HandleFunc("PUT /", MakeHandler(h.updateGame))
+	r.HandleFunc("DELETE /{id}", MakeHandler(h.deleteGame))
+	r.HandleFunc("PUT /stats", MakeHandler(h.updateStats))
 }
 
 func (h *GameHandler) getGame(w http.ResponseWriter, r *http.Request) error {

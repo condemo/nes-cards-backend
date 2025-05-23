@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/go-playground/validator/v10 v10.26.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/uptrace/bun/dialect/pgdialect v1.2.11
 	github.com/uptrace/bun/dialect/sqlitedialect v1.2.11
@@ -39,7 +40,7 @@ require (
 	github.com/uptrace/bun/driver/sqliteshim v1.2.11
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/crypto v0.38.0
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect

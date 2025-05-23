@@ -21,7 +21,7 @@ func Recover(next http.Handler) http.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				// TODO: Implementar para usar con vue
-				fmt.Println(err)
+				fmt.Println(r.URL, "->", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, "internal server error")
 			}
